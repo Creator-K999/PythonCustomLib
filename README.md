@@ -1,2 +1,2 @@
-# PythonObjectsManager
-This is a Python ObjectsManager repo which aims to manage python objects for future projects!
+# PythonCustomLib
+This is a Python custom library repo which aims to have repeatedly used classes in my projects!
