@@ -1,4 +1,4 @@
-from nextcord.ext.commands import Cog, command
+from discord.ext.commands import Cog, command
 
 from processing.management.logger.logger import Log
 from processing.management.objects.objects_manager import ObjectsManager
