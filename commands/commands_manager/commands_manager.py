@@ -1,6 +1,7 @@
-from discord.ext.commands import Cog, command
-from discord_components import Button
+from discord import Member, Embed, Colour
+from discord.ext.commands import Cog, command, has_permissions
 
+from objects.button.button_class import ButtonClass
 from processing.management.logger.logger import Log
 from processing.management.objects.objects_manager import ObjectsManager
 
@@ -19,9 +20,22 @@ class CommandsManager(Cog):
         await ctx.reply(f"The bot says ({message})")
 
     @command()
-    async def show_buttons(self, ctx):
-        await ctx.send("Test!", components=[Button(label="Test!!")])
-        respond = await self.__bot.wait_for("button_click")
+    @has_permissions(manage_channels=True)
+    async def show_button(self, ctx):
+        await ctx.send("Test!", components=[ButtonClass(label="Test!!")])
 
-        if respond.channel == ctx.channel and respond.message.id == ctx.channel.last_message.id:
-            await respond.respond(content=f"Button has been pressed!")
+    @command()
+    @has_permissions(manage_messages=True)
+    async def clear(self, ctx, count=10000000000000):
+        await ctx.channel.purge(limit=count)
+
+    @command(name="avatar")
+    async def avatar(self, ctx, member: Member = None):
+        avatar_url = ctx.author.avatar_url if member is None else member.avatar_url
+
+        embed_avatar = Embed(title="Avatar Link", url=avatar_url, color=Colour.dark_grey())
+        embed_avatar.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+        embed_avatar.set_footer(text=f"Request came from {await self.__bot.fetch_user(ctx.author.id)}")
+        embed_avatar.set_image(url=avatar_url)
+
+        await ctx.reply(embed=embed_avatar)
