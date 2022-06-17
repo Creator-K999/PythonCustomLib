@@ -1,6 +1,8 @@
 from discord import Member, Embed, Colour
 from discord.ext.commands import Cog, command, has_permissions
 
+from numexpr import evaluate
+
 from objects.button.button_class import ButtonClass
 from processing.management.logger.logger import Log
 from processing.management.objects.objects_manager import ObjectsManager
@@ -39,3 +41,19 @@ class CommandsManager(Cog):
         embed_avatar.set_image(url=avatar_url)
 
         await ctx.reply(embed=embed_avatar)
+
+    @command()
+    async def basic_calc(self, ctx, *args):
+
+        equation = " ".join(args)
+        embed_calc = Embed(title=f"{equation} = ",
+                           description="{}".format(evaluate(equation)),
+                           color=Colour.dark_grey())
+        embed_calc.set_author(name=ctx.author.display_name, icon_url=ctx.author.avatar_url)
+        await ctx.reply(embed=embed_calc)
+
+    @command(name='ping', help='Shows Ping(ms)')
+    async def ping(self, ctx):
+        ping = f'{round(self.__bot.latency * 1000)} ms :signal_strength::globe_with_meridians: '
+        embed = Embed(title="Pong!", description=ping)
+        await ctx.send(embed=embed)
