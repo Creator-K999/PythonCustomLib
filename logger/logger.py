@@ -1,4 +1,5 @@
 from logging import config, getLogger
+from os import getcwd
 from os.path import basename
 from inspect import stack
 
@@ -6,6 +7,7 @@ from threading import Lock, Thread
 
 
 class Log:
+    print(getcwd())
     __lock = Lock()
 
     config.fileConfig(fname="logger.config")
