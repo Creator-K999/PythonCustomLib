@@ -1,6 +1,6 @@
 from inspect import stack
 
-from processing.management.logger.logger import Log
+from management.logger.logger import Log
 
 
 class ObjectsManager:
