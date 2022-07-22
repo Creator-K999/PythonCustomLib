@@ -1,5 +1,4 @@
 from logging import config, getLogger
-from os import getcwd
 from os.path import basename
 from inspect import stack
 
@@ -7,7 +6,6 @@ from threading import Lock, Thread
 
 
 class Log:
-    print(getcwd())
     __lock = Lock()
 
     config.fileConfig(fname="logger.config")
@@ -17,60 +15,45 @@ class Log:
         raise NotImplementedError("Log cannot be instantiated!")
 
     @staticmethod
-    def __log(target, message, custom_stack):
+    def __log(target, message, stack_info):
         Thread(
             daemon=True,
             target=target,
-            args=(f"\n\tFILE: {basename(custom_stack.filename)}"
-                  f"\n\tFUNC: {custom_stack.function}"
-                  f"\n\tLINE: {custom_stack.lineno}"
-                  f"\n\tMESSAGE: {message}\n",)
+            args=(
+                f"""
+                FILE: {basename(stack_info.filename)}
+                FUNC: {stack_info.function}
+                LINE: {stack_info.lineno}
+                MASG: {message}
+            """,)
         ).start()
 
     @classmethod
     def debug(cls, message, custom_stack=None):
         with cls.__lock:
-            if custom_stack is None:
-                cls.__log(cls.__logger.debug, message, stack()[1])
-            else:
-                cls.__log(cls.__logger.debug, message, custom_stack)
+            cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
 
     @classmethod
     def info(cls, message, custom_stack=None):
         with cls.__lock:
-            if custom_stack is None:
-                cls.__log(cls.__logger.info, message, stack()[1])
-            else:
-                cls.__log(cls.__logger.info, message, custom_stack)
+            cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
 
     @classmethod
     def warning(cls, message, custom_stack=None):
         with cls.__lock:
-            if custom_stack is None:
-                cls.__log(cls.__logger.warning, message, stack()[1])
-            else:
-                cls.__log(cls.__logger.warning, message, custom_stack)
+            cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
 
     @classmethod
     def error(cls, message, custom_stack=None):
         with cls.__lock:
-            if custom_stack is None:
-                cls.__log(cls.__logger.error, message, stack()[1])
-            else:
-                cls.__log(cls.__logger.error, message, custom_stack)
+            cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
 
     @classmethod
     def exception(cls, message, custom_stack=None):
         with cls.__lock:
-            if custom_stack is None:
-                cls.__log(cls.__logger.exception, message, stack()[1])
-            else:
-                cls.__log(cls.__logger.exception, message, custom_stack)
+            cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
 
     @classmethod
     def critical(cls, message, custom_stack=None):
         with cls.__lock:
-            if custom_stack is None:
-                cls.__log(cls.__logger.critical, message, stack()[1])
-            else:
-                cls.__log(cls.__logger.critical, message, custom_stack)
+            cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
