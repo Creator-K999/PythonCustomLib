@@ -21,12 +21,22 @@ class Log:
             target=target,
             args=(
                 f"""
-                FILE: {basename(stack_info.filename)}
-                FUNC: {stack_info.function}
-                LINE: {stack_info.lineno}
-                MASG: {message}
-            """,)
+    FILE: {basename(stack_info.filename)}
+    FUNC: {stack_info.function}
+    LINE: {stack_info.lineno}
+    MASG: {message}
+""",)
         ).start()
+
+    @staticmethod
+    def __thread_less_log(target, message, stack_info):
+
+        target(f"""
+    FILE: {basename(stack_info.filename)}
+    FUNC: {stack_info.function}
+    LINE: {stack_info.lineno}
+    MASG: {message}
+""")
 
     @classmethod
     def debug(cls, message, custom_stack=None):
@@ -34,9 +44,19 @@ class Log:
             cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
 
     @classmethod
+    def thread_less_debug(cls, message, custom_stack=None):
+        with cls.__lock:
+            cls.__thread_less_log(cls.__logger.debug, message, custom_stack or stack()[1])
+
+    @classmethod
     def info(cls, message, custom_stack=None):
         with cls.__lock:
             cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
+
+    @classmethod
+    def thread_less_info(cls, message, custom_stack=None):
+        with cls.__lock:
+            cls.__thread_less_log(cls.__logger.info, message, custom_stack or stack()[1])
 
     @classmethod
     def warning(cls, message, custom_stack=None):
@@ -44,9 +64,19 @@ class Log:
             cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
 
     @classmethod
+    def thread_less_warning(cls, message, custom_stack=None):
+        with cls.__lock:
+            cls.__thread_less_log(cls.__logger.warning, message, custom_stack or stack()[1])
+
+    @classmethod
     def error(cls, message, custom_stack=None):
         with cls.__lock:
             cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
+
+    @classmethod
+    def thread_less_error(cls, message, custom_stack=None):
+        with cls.__lock:
+            cls.__thread_less_log(cls.__logger.error, message, custom_stack or stack()[1])
 
     @classmethod
     def exception(cls, message, custom_stack=None):
@@ -54,6 +84,16 @@ class Log:
             cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
 
     @classmethod
+    def thread_less_exception(cls, message, custom_stack=None):
+        with cls.__lock:
+            cls.__thread_less_log(cls.__logger.exception, message, custom_stack or stack()[1])
+
+    @classmethod
     def critical(cls, message, custom_stack=None):
         with cls.__lock:
             cls.__log(cls.__logger.debug, message, custom_stack or stack()[1])
+
+    @classmethod
+    def thread_less_critical(cls, message, custom_stack=None):
+        with cls.__lock:
+            cls.__thread_less_log(cls.__logger.critical, message, custom_stack or stack()[1])
