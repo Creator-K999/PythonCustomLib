@@ -12,6 +12,17 @@ class ObjectsManager:
         raise NotImplementedError("Cannot Instantiate ObjectsManager!")
 
     @classmethod
+    def object_exist(cls, object_name: str):
+
+        current_stack = stack()[1]
+
+        if not isinstance(object_name, str):
+            Log.error(f"String required, got {type(object_name)} instead!", current_stack)
+            return None
+
+        return (object_name in cls.__objects) and cls.__objects[object_name]
+
+    @classmethod
     def get_object_by_name(cls, object_name):
 
         current_stack = stack()[1]
